@@ -1,0 +1,3 @@
+#pragma once
+
+constexpr static char @var_name@[@size@ +1] = R"__embed(@data@)__embed";
