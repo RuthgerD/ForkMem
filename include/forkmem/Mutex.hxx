@@ -12,10 +12,14 @@ class IpcMutex {
     bool try_lock() noexcept { return !flag.exchange(true, std::memory_order_acquire); }
 
     void lock() noexcept {
+
         while (!try_lock())
-            std::this_thread::yield();
+            flag.wait(true, std::memory_order_acquire);
     }
 
-    void unlock() noexcept { flag.store(false, std::memory_order_release); }
+    void unlock() noexcept {
+        flag.store(false, std::memory_order_release);
+        flag.notify_one();
+    }
 };
 } // namespace frkm
