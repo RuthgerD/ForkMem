@@ -25,7 +25,10 @@
 
 int main() {
 
+    std::cout << "runtime!\n";
+
     auto bridge = frkm::UserBridge<TestData>{};
+    std::cout << "bridge created!\n";
 
 #if defined(__unix__)
     const auto execut =
@@ -39,6 +42,7 @@ int main() {
 #endif
 
     bridge.start(execut);
+    std::cout << "bridge started!\n";
 
     auto& dat = bridge.user_data();
     while (true) {
