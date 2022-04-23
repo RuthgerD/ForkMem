@@ -23,6 +23,7 @@
 #include <sstream>
 #include <variant>
 #include <boost/process.hpp>
+#include <boost/process/search_path.hpp>
 #include "cmake/CMakeLists.hxx"
 #include "cmake/ConfigureSketch.hxx"
 #include "cmake/LibraryGen.hxx"
@@ -35,7 +36,7 @@
 
 namespace bp = boost::process;
 
-std::string Sketch::find_cmake_path() { return "/usr/bin/cmake"; }
+std::string Sketch::find_cmake_path() { return bp::search_path({"cmake"}).generic_string(); }
 
 bool Sketch::CompiledInfo::is_valid() { return stdfs::exists(build_path); }
 

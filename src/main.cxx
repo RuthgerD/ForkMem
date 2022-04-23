@@ -17,77 +17,38 @@
  */
 
 #include <filesystem>
-#include "ardrivo/data/SharedBoard.hxx"
+#include <mutex>
 #include "forkmem/Bridge.hxx"
-#include "forkmem/unix/bridge.hxx"
 #include "ssmce/Sketch.hxx"
 #include "ssmce/sync_stringbuf.hxx"
+#include "TestData.hxx"
 
 int main() {
 
-    auto sketch = Sketch{
-        stdfs::absolute("demo"),
-        {
-            Library{.type =
-                        Library::Imported{
-                            .name = "ardrivo",
-                            .incdirs = {stdfs::absolute("include/ardrivo/lib").generic_string()},
-                            .location = stdfs::absolute("build/libardrivo.so").generic_string(),
-                            .implib = stdfs::absolute("build/libardrivo.so").generic_string(),
-                        }},
-            //  {Library{
-            //      .type =
-            //          Library::Source{
-            //              .name = "Smartcar_shield",
-            //              .depends = {"ardrivo"},
-            //              .uri =
-            //              "https://github.com/platisd/smartcar_shield/archive/refs/tags/7.0.1.tar.gz",
-            //              .patch_uri =
-            //                  "file://" +
-            //                  stdfs::absolute("share/patches/smartcar_shield/patch/").generic_string(),
-            //              .incdirs = {"src/"},
-            //              .sources = {"src/*.cpp", "src/*.hpp", "src/*.c", "src/*.h", "src/*.cxx",
-            //              "src/*.hxx",
-            //                          "src/*.c++", "src/*.h++"},
-            //          }}}
-        },
-        stdfs::absolute("build")};
+    auto bridge = frkm::UserBridge<TestData>{};
 
-    auto sync_buf = sync_stringbuf{};
-    auto log_read = std::jthread{[&](auto stop_token) {
-        std::string out;
-        while (std::getline(std::istream{&sync_buf}, out) || !stop_token.stop_requested()) {
-            if (!out.empty())
-                std::cout << out << "\n";
-            std::this_thread::yield();
-        }
-    }};
+#if defined(__unix__)
+    const auto execut =
+        frkm::Bridge::Executable{.library = "./build/libforkmem-test-child.so", .entry = "entry"};
+#elif defined(_WIN32)
+    const auto execut = frkm::Bridge::Executable{.path = "./build/forkmem-test-child.exe"};
 
-    auto res = sketch.compile(std::ostream{&sync_buf});
+#endif
 
-    log_read.request_stop();
-    log_read.join();
-
-    if (!res) {
-        std::cout << "Failed to compile sketch\n";
-        return 1;
-    }
-
-    auto bridge = frkm::UserBridge<SharedBoard>{};
-    auto& pins = bridge.user_data().pins;
-    pins.emplace(0, 0);
-
-    bridge.start(*sketch.executable());
+    bridge.start(execut);
 
     std::this_thread::sleep_for(std::chrono::milliseconds{300});
 
+    auto& dat = bridge.user_data();
+    while (true) {
+        std::scoped_lock lk{dat.lk};
+        if (dat.num % 2)
+            dat.num += 1;
+        if (dat.num == 1000)
+            break;
+    }
+
     bridge.stop();
 
-    std::string buf;
-    buf.resize(512);
-    const auto count = bridge.user_data().serial0.tx().read({buf.data(), buf.size() - 1});
-    buf.resize(count);
-
-    std::cout << buf << "\n";
-    std::cout << "pin value: " << pins.at(0).read() << "\n";
+    std::cout << "should be: " << dat.num << "\n";
 }

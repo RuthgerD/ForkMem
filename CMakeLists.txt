@@ -70,6 +70,16 @@ embed_text("share/cmake/Preprocessing.cmake" ${embed_out} "Preprocessing")
 embed_text("share/cmake/ProbeCompilerIncdirs.cmake" ${embed_out} "ProbeCompilerIncdirs")
 embed_text("share/cmake/sketch_main.cxx" "embed/snippets" "SketchMain")
 
+
 add_executable(forkmem-test)
+target_link_libraries(forkmem-test PUBLIC forkmem-child)
 target_sources(forkmem-test PUBLIC src/main.cxx)
-target_link_libraries(forkmem-test PUBLIC ssmce)
+
+if(UNIX)
+add_library(forkmem-test-child SHARED)
+elseif(WINDOWS)
+add_executable(forkmem-test-child)
+endif()
+target_sources(forkmem-test-child PUBLIC src/test.cxx)
+
+target_link_libraries(forkmem-test-child PUBLIC forkmem-child)
