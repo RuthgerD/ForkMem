@@ -62,7 +62,7 @@ struct IpcAtomic {
         return from_opaque(AtomicOps::exchange(storage, to_opaque(desired), order));
     }
 
-    void wait(T old, std::memory_order order = std::memory_order::seq_cst) const noexcept {
+    void wait(T old, std::memory_order order = std::memory_order_seq_cst) const noexcept {
         AtomicOps::wait(storage, to_opaque(old), order);
     }
 
