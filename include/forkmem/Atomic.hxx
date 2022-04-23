@@ -31,8 +31,9 @@ struct AtomicOps {
 };
 
 template <class T>
-requires(std::has_single_bit(alignof(T)) && alignof(T) <= alignof(std::uint64_t) &&
-         std::is_trivial_v<T>) struct IpcAtomic {
+// requires(std::has_single_bit(alignof(T)) && alignof(T) <= alignof(std::uint64_t) &&
+//          std::is_trivial_v<T>)
+struct IpcAtomic {
     using storage_t = AtomicOps::storage_t;
 
     alignas(alignof(T)) volatile storage_t storage{};
