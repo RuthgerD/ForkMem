@@ -7,29 +7,39 @@
 #include "forkmem/Atomic.hxx"
 
 namespace frkm {
+
+template <class To, class From> To bit_cast(const From& src) noexcept {
+    static_assert(std::is_trivially_constructible_v<To>,
+                  "This implementation additionally requires destination type to be trivially constructible");
+
+    To dst;
+    std::memcpy(&dst, &src, sizeof(To));
+    return dst;
+}
+
 using ops = boost::atomics::detail::core_operations<sizeof(std::uint64_t), false, true>;
 using wait_ops = boost::atomics::detail::wait_operations<ops>;
 
 AtomicOps::storage_t AtomicOps::load(const volatile storage_t& storage, std::memory_order order) noexcept {
-    return std::bit_cast<storage_t>(ops::load(reinterpret_cast<ops::storage_type const volatile&>(storage),
-                                              static_cast<boost::memory_order>(order)));
+    return frkm::bit_cast<storage_t>(ops::load(reinterpret_cast<ops::storage_type const volatile&>(storage),
+                                               static_cast<boost::memory_order>(order)));
 }
 
 void AtomicOps::store(volatile storage_t& storage, storage_t val, std::memory_order order) noexcept {
-    ops::store(reinterpret_cast<ops::storage_type volatile&>(storage), std::bit_cast<ops::storage_type>(val),
+    ops::store(reinterpret_cast<ops::storage_type volatile&>(storage), frkm::bit_cast<ops::storage_type>(val),
                static_cast<boost::memory_order>(order));
 }
 
 AtomicOps::storage_t AtomicOps::exchange(volatile storage_t& storage, storage_t desired,
                                          std::memory_order order) noexcept {
-    return std::bit_cast<storage_t>(ops::exchange(reinterpret_cast<ops::storage_type volatile&>(storage),
-                                                  std::bit_cast<ops::storage_type>(desired),
-                                                  static_cast<boost::memory_order>(order)));
+    return frkm::bit_cast<storage_t>(ops::exchange(reinterpret_cast<ops::storage_type volatile&>(storage),
+                                                   frkm::bit_cast<ops::storage_type>(desired),
+                                                   static_cast<boost::memory_order>(order)));
 }
 
 void AtomicOps::wait(const volatile storage_t& storage, storage_t old, std::memory_order order) noexcept {
     wait_ops::wait(reinterpret_cast<const ops::storage_type volatile&>(storage),
-                   std::bit_cast<ops::storage_type>(old), static_cast<boost::memory_order>(order));
+                   frkm::bit_cast<ops::storage_type>(old), static_cast<boost::memory_order>(order));
 }
 
 void AtomicOps::notify_one(volatile storage_t& storage) noexcept {
