@@ -18,8 +18,8 @@
 
 #include <filesystem>
 #include "ardrivo/data/SharedBoard.hxx"
+#include "forkmem/Bridge.hxx"
 #include "forkmem/unix/bridge.hxx"
-#include "forkmem/unix/executable.hxx"
 #include "ssmce/Sketch.hxx"
 #include "ssmce/sync_stringbuf.hxx"
 
@@ -27,25 +27,30 @@ int main() {
 
     auto sketch = Sketch{
         stdfs::absolute("demo"),
-        {Library{.type =
-                     Library::Imported{
-                         .name = "ardrivo",
-                         .incdirs = {stdfs::absolute("include/ardrivo/lib")},
-                         .location = stdfs::absolute("build/libardrivo.so"),
-                         .implib = stdfs::absolute("build/libardrivo.so"),
-                     }},
-         {Library{
-             .type =
-                 Library::Source{
-                     .name = "Smartcar_shield",
-                     .depends = {"ardrivo"},
-                     .uri = "https://github.com/platisd/smartcar_shield/archive/refs/tags/7.0.1.tar.gz",
-                     .patch_uri =
-                         "file://" + stdfs::absolute("share/patches/smartcar_shield/patch/").generic_string(),
-                     .incdirs = {"src/"},
-                     .sources = {"src/*.cpp", "src/*.hpp", "src/*.c", "src/*.h", "src/*.cxx", "src/*.hxx",
-                                 "src/*.c++", "src/*.h++"},
-                 }}}},
+        {
+            Library{.type =
+                        Library::Imported{
+                            .name = "ardrivo",
+                            .incdirs = {stdfs::absolute("include/ardrivo/lib").generic_string()},
+                            .location = stdfs::absolute("build/libardrivo.so").generic_string(),
+                            .implib = stdfs::absolute("build/libardrivo.so").generic_string(),
+                        }},
+            //  {Library{
+            //      .type =
+            //          Library::Source{
+            //              .name = "Smartcar_shield",
+            //              .depends = {"ardrivo"},
+            //              .uri =
+            //              "https://github.com/platisd/smartcar_shield/archive/refs/tags/7.0.1.tar.gz",
+            //              .patch_uri =
+            //                  "file://" +
+            //                  stdfs::absolute("share/patches/smartcar_shield/patch/").generic_string(),
+            //              .incdirs = {"src/"},
+            //              .sources = {"src/*.cpp", "src/*.hpp", "src/*.c", "src/*.h", "src/*.cxx",
+            //              "src/*.hxx",
+            //                          "src/*.c++", "src/*.h++"},
+            //          }}}
+        },
         stdfs::absolute("build")};
 
     auto sync_buf = sync_stringbuf{};

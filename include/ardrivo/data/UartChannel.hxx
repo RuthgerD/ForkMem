@@ -3,14 +3,14 @@
 #include <deque>
 #include <mutex>
 #include <span>
-#include <boost/atomic/atomic.hpp>
-#include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include "forkmem/Atomic.hxx"
+#include "forkmem/Mutex.hxx"
 #include "forkmem/allocator.hxx"
 
 class UartChannel {
   public:
     class Impl {
-        boost::interprocess::interprocess_mutex mut;
+        frkm::IpcMutex mut;
         std::uint16_t max_buffered = 128;
         std::deque<char, frkm::polymorphic_allocator<char>> deque;
 
@@ -43,7 +43,7 @@ class UartChannel {
     };
 
   private:
-    boost::atomic_bool begun;
+    frkm::IpcAtomic<bool> begun;
 
     Impl rxch;
     Impl txch;

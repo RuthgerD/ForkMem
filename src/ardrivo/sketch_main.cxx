@@ -16,25 +16,22 @@
  *
  */
 
-#include <atomic>
-#include <csignal>
-#include <cstdio>
-#include <cstdlib>
 #include <iostream>
-#include "ardrivo/data/SharedBoard.hxx"
+#include "forkmem/child/Child.hxx"
 
+#include "ardrivo/data/SharedBoard.hxx"
 SharedBoard* get_user_data() {
     thread_local SharedBoard* user_data;
     if (user_data == nullptr) {
-        const auto user_data_ptr_str = std::getenv("USERDATA_PTR");
-        auto sus_pointer_num = std::stol(user_data_ptr_str);
-        auto pointer = reinterpret_cast<void*>(sus_pointer_num);
-        user_data = static_cast<SharedBoard*>(pointer);
+        user_data = static_cast<SharedBoard*>(get_data());
     }
     return user_data;
 }
 
 void sketch_main(void (*setup)(), void (*loop)()) {
+    // trigger initialization if not already
+    get_user_data();
+
     std::cout << "sketch main? \n";
 
     (*setup)();

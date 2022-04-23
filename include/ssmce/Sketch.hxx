@@ -27,7 +27,7 @@
 #include <thread>
 #include <variant>
 #include <vector>
-#include "forkmem/unix/executable.hxx"
+#include "forkmem/Bridge.hxx"
 #include "ssmce/Library.hxx"
 #include "ssmce/Uuid.hxx"
 
@@ -38,7 +38,7 @@ struct Sketch {
 
     struct CompiledInfo {
         stdfs::path build_path;
-        frkm::Executable executable;
+        frkm::Bridge::Executable executable;
 
         bool is_valid();
 
@@ -60,7 +60,7 @@ struct Sketch {
 
     bool compile(std::basic_ostream<char> log);
 
-    const frkm::Executable* executable() const {
+    const frkm::Bridge::Executable* executable() const {
         return compiled_info ? &compiled_info->executable : nullptr;
     }
 

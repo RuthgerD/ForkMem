@@ -1,11 +1,11 @@
 #pragma once
 
 #include <cstdint>
-#include <boost/atomic/atomic.hpp>
+#include "forkmem/Atomic.hxx"
 
 class Pin {
   public:
-    enum DataDirection {
+    enum DataDirection : std::uint8_t {
         In,
         Out,
     };
@@ -17,8 +17,8 @@ class Pin {
     bool can_digital_write = true;
     bool can_analog_read = true;
     bool can_analog_write = true;
-    boost::atomic_uint16_t value{0};
-    boost::atomic<DataDirection> data_direction;
+    frkm::IpcAtomic<uint16_t> value{0};
+    frkm::IpcAtomic<DataDirection> data_direction;
 
   public:
     Pin(std::uint16_t id) : pin_id{id} {}

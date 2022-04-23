@@ -6,6 +6,23 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_EXTENSIONS OFF)
 
 
+add_library(forkmem STATIC)
+target_include_directories(forkmem PUBLIC include/)
+target_sources(forkmem PUBLIC
+    src/forkmem/unix/bridge.cxx
+    src/forkmem/unix/IpcMemory.cxx
+    src/forkmem/Atomic.cxx
+)
+
+
+add_library(forkmem-child INTERFACE)
+target_sources(forkmem-child INTERFACE
+    include/forkmem/child/Child.hxx
+    src/forkmem/child/Child.cxx
+    src/forkmem/Atomic.cxx
+
+)
+
 add_library(ardrivo SHARED)
 target_sources(ardrivo PUBLIC
     src/ardrivo/sketch_main.cxx
@@ -17,12 +34,8 @@ target_sources(ardrivo PUBLIC
     src/ardrivo/lib/Arduino.cxx
 )
 target_include_directories(ardrivo PUBLIC include/)
+target_link_libraries(ardrivo PUBLIC forkmem-child)
 
-add_library(forkmem STATIC)
-target_include_directories(forkmem PUBLIC include/)
-target_sources(forkmem PUBLIC
-    src/forkmem/unix/bridge.cxx
-)
 
 add_library(ssmce STATIC)
 target_include_directories(ssmce PUBLIC include/ ${CMAKE_BINARY_DIR}/embed)

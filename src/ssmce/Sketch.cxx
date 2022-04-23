@@ -47,7 +47,16 @@ bool Sketch::compile(std::basic_ostream<char> log) {
         auto ret = CompiledInfo{};
         auto uuid = Uuid::generate();
         ret.build_path = build_path / ".tmp" / uuid.to_hex();
+
+#if defined(__unix__) || defined(__APPLE__)
         ret.executable = {.library = ret.build_path / "build" / "Sketch", .entry = "sketch_entry"};
+#elif defined(_WIN32)
+        ret.executable =
+            frkm::Bridge::Executable{.path = (ret.build_path / "build" / "Sketch").generic_string()};
+
+#else
+#error "get fucked"
+#endif
 
         compiled_info = std::move(ret);
 
