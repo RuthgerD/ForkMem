@@ -15,8 +15,9 @@ void* get_data() {
 }
 #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 // TODO : lean down the includes
-#include <memoryapi.h>
 #include <windows.h>
+
+#include <memoryapi.h>
 
 #include <winbase.h>
 
