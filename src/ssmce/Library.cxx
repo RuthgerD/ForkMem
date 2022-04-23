@@ -17,6 +17,7 @@
  */
 
 #include <iomanip>
+#include <sstream>
 #include "ssmce/Library.hxx"
 
 std::string to_cmake_list(const std::vector<std::string>& vec) {
