@@ -25,7 +25,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
-#include <memory_resource>
 #include <mutex>
 #include <string>
 #include <thread>

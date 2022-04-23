@@ -30,7 +30,8 @@ using memory_resource = std::pmr::memory_resource;
 #elif __has_include(<experimental/memory_resource>)
 #include <experimental/memory_resource>
 namespace frkm {
-using polymorphic_allocator = std::experimental::pmr::polymorphic_allocator<std::byte>;
+template <class T> using polymorphic_allocator = std::experimental::pmr::polymorphic_allocator<T>;
+
 using memory_resource = std::experimental::pmr::memory_resource;
 } // namespace frkm
 #else
