@@ -32,3 +32,16 @@ jobs:
           cmake -G Ninja -B build/
           cmake --build build
           build/forkmem-test
+  
+  build-windows:
+    name: windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: build / run
+        run: |
+          choco install ninja
+          mkdir build
+          cmake -G Ninja -B build/
+          cmake --build build
+          build/forkmem-test.exe

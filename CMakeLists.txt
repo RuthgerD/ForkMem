@@ -77,7 +77,7 @@ target_sources(forkmem-test PUBLIC src/main.cxx)
 
 if(UNIX)
 add_library(forkmem-test-child SHARED)
-elseif(WINDOWS)
+elseif(WIN32)
 add_executable(forkmem-test-child)
 endif()
 target_sources(forkmem-test-child PUBLIC src/test.cxx)
