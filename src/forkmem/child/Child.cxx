@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
-#if defined(__linux__) || defined(__APPLE_) || defined(__unix_)
+#if defined(__linux__) || defined(__APPLE__) || defined(__unix__)
 
 // On unix we are forked from the parent thus already have the memory mapped
 void* get_data() {
