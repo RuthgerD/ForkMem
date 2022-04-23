@@ -40,8 +40,6 @@ int main() {
 
     bridge.start(execut);
 
-    std::this_thread::sleep_for(std::chrono::milliseconds{300});
-
     auto& dat = bridge.user_data();
     while (true) {
         std::scoped_lock lk{dat.lk};

@@ -44,7 +44,7 @@ requires(std::has_single_bit(alignof(T)) && alignof(T) <= alignof(std::uint64_t)
     }
 
     static inline storage_t to_opaque(T t) {
-        storage_t ret;
+        storage_t ret = {0};
         memcpy(ret.data(), &t, sizeof(T));
         return ret;
     }
