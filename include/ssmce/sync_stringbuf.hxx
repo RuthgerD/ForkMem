@@ -20,6 +20,7 @@
 
 #include <mutex>
 #include <sstream>
+#include <streambuf>
 
 struct sync_stringbuf : public std::stringbuf {
 
@@ -51,7 +52,7 @@ struct sync_stringbuf : public std::stringbuf {
         return std::stringbuf::pbackfail(c);
     }
 
-    std::basic_stringbuf<char>::__streambuf_type* setbuf(char_type* s, std::streamsize n) override {
+    std::basic_streambuf<char>* setbuf(char_type* s, std::streamsize n) override {
         std::lock_guard lk{mut};
         return std::stringbuf::setbuf(s, n);
     }
