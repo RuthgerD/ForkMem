@@ -1,9 +1,10 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 #include "forkmem/windows/IpcMemory.hxx"
 
+#include <windows.h>
+
 #include <memoryapi.h>
 #include <winbase.h>
-#include <windows.h>
 
 namespace frkm {
 IpcMemory::IpcMemory(std::size_t size) {
