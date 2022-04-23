@@ -2,3 +2,4 @@ cmake-build-*/
 build
 .cache
 .vscode
+.boost_1_78_0

@@ -4,7 +4,12 @@ cmake_minimum_required(VERSION 3.23)
 set (CMAKE_CXX_STANDARD 20)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_EXTENSIONS OFF)
+list (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake/Modules")
 
+if (EXISTS "${CMAKE_SOURCE_DIR}/.boost_1_78_0/")
+    set(BOOST_SOURCE_ROOT "./.boost_1_78_0/")
+endif()
+include(SetupBoost)
 
 add_library(forkmem STATIC)
 target_include_directories(forkmem PUBLIC include/)
@@ -14,14 +19,14 @@ target_sources(forkmem PUBLIC
     src/forkmem/Atomic.cxx
 )
 
+target_link_libraries(forkmem PRIVATE Boost::atomic Boost::process)
 
 add_library(forkmem-child INTERFACE)
 target_sources(forkmem-child INTERFACE
     include/forkmem/child/Child.hxx
     src/forkmem/child/Child.cxx
-    src/forkmem/Atomic.cxx
-
 )
+target_link_libraries(forkmem-child INTERFACE forkmem)
 
 add_library(ardrivo SHARED)
 target_sources(ardrivo PUBLIC
