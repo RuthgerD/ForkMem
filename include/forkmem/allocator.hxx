@@ -25,8 +25,6 @@ namespace frkm {
 template <class T> using polymorphic_allocator = std::pmr::polymorphic_allocator<T>;
 
 using memory_resource = std::pmr::memory_resource;
-using monotonic_buffer_resource = std::pmr::monotonic_buffer_resource;
-using unsynchronized_pool_resource = std::pmr::unsynchronized_pool_resource;
 
 } // namespace frkm
 #elif __has_include(<experimental/memory_resource>)
@@ -34,9 +32,8 @@ using unsynchronized_pool_resource = std::pmr::unsynchronized_pool_resource;
 namespace frkm {
 using polymorphic_allocator = std::experimental::pmr::polymorphic_allocator<std::byte>;
 using memory_resource = std::experimental::pmr::memory_resource;
-using monotonic_buffer_resource = std::experimental::pmr::monotonic_buffer_resource;
-using unsynchronized_pool_resource = std::experimental::pmr::unsynchronized_pool_resource;
 } // namespace frkm
+#else
 #error "Missing <memory_resource>"
 #endif
 #endif
