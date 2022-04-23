@@ -22,16 +22,18 @@ void* get_data() {
 #include <winbase.h>
 
 void* get_data() {
-    const auto handle = reinterpret_cast<void*>(std::stol(std::getenv("MAPVIEW_HANDLE")));
-    const auto view_size = std::stol(std::getenv("MAPVIEW_SIZE"));
-    const auto ptr_base = reinterpret_cast<void*>(std::stol(std::getenv("MAPVIEW_PTR_BASE")));
+    const auto handle = reinterpret_cast<void*>(std::stoll(std::getenv("MAPVIEW_HANDLE")));
+    const auto view_size = std::stoll(std::getenv("MAPVIEW_SIZE"));
+    const auto ptr_base = reinterpret_cast<void*>(std::stoll(std::getenv("MAPVIEW_PTR_BASE")));
 
-    const auto userdata_ptr = std::stol(std::getenv("USERDATA_PTR"));
+    const auto userdata_ptr = std::stoll(std::getenv("USERDATA_PTR"));
 
-    auto* ptr_mapped = MapViewOfFileEx(handle, FILE_MAP_ALL_ACCESS, 0, 0, 1024, ptr_base);
+    auto* ptr_mapped = MapViewOfFileEx(handle, FILE_MAP_ALL_ACCESS, 0, 0, view_size, ptr_base);
 
     // userdata ptr valid after file map
     return reinterpret_cast<void*>(userdata_ptr);
 }
+
+int main() {}
 
 #endif

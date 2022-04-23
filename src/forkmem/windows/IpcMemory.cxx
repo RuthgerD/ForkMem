@@ -15,19 +15,17 @@ IpcMemory::IpcMemory(std::size_t size) {
     sec.nLength = sizeof(SECURITY_ATTRIBUTES);
     sec.bInheritHandle = 1;
 
-    map_handle = CreateFileMappingA(NULL, &sec, PAGE_READWRITE, 1024, 1024, NULL);
+    map_handle = CreateFileMappingA(NULL, &sec, PAGE_READWRITE, mapping_size, mapping_size, NULL);
 
     VirtualFree(ptr_base, 0, MEM_RELEASE);
 
-    mmap_buffer = MapViewOfFileEx(map_handle, FILE_MAP_ALL_ACCESS, 0, 0, 1024, ptr_base);
+    mmap_buffer = MapViewOfFileEx(map_handle, FILE_MAP_ALL_ACCESS, 0, 0, mapping_size, ptr_base);
 
     auto usable_buf = reinterpret_cast<char*>(mmap_buffer);
     resource = new (mmap_buffer)
         ipc_pool_resource{usable_buf + sizeof(ipc_pool_resource), mapping_size - sizeof(ipc_pool_resource)};
 }
 
-polymorphic_allocator<std::byte> IpcMemory::get_allocator() { return resource; }
-
 IpcMemory::~IpcMemory() { resource->~ipc_pool_resource(); }
-
+} // namespace frkm
 #endif

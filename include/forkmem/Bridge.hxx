@@ -14,13 +14,21 @@ template <class T> class UserBridge : public Bridge {
   public:
     using Bridge::Executable;
 
-    UserBridge() { data = frkm::new_object(get_allocator<T>(), get_allocator<std::byte>()); }
+    UserBridge() {
+
+        auto talloc = get_allocator<T>();
+        auto balloc = get_allocator<std::byte>();
+        data = frkm::new_object(talloc, balloc);
+    }
 
     T& user_data() { return *data; }
 
     void start(const Executable& exec) { return Bridge::start(exec, static_cast<void*>(data)); }
 
-    ~UserBridge() { frkm::delete_object(get_allocator<T>(), data); }
+    ~UserBridge() {
+        auto talloc = get_allocator<T>();
+        frkm::delete_object(talloc, data);
+    }
 };
 
 } // namespace frkm

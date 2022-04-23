@@ -22,13 +22,13 @@ struct Bridge::Control {
 };
 
 void Bridge::start(const Executable& exec, void* user_data) {
-    control = frkm::new_object<Control>({memory.get_resource()}, exec);
+    control = frkm::new_object(get_allocator<Control>(), exec);
 
     control->proc = bp::child(
         bp::env["MAPVIEW_HANDLE"] = std::to_string(reinterpret_cast<std::size_t>(memory.map_handle)),
         bp::env["MAPVIEW_SIZE"] = std::to_string(memory.mapping_size),
         bp::env["MAPVIEW_PTR_BASE"] = std::to_string(reinterpret_cast<std::size_t>(memory.mmap_buffer)),
-        bp::env["USERDATA_PTR"] = std::to_string(reinterpret_cast<std::size_t>(user_data)));
+        bp::env["USERDATA_PTR"] = std::to_string(reinterpret_cast<std::size_t>(user_data)), exec.path);
 }
 
 void Bridge::suspend() { ::NtSuspendProcess(control->proc.native_handle()); }
@@ -42,7 +42,7 @@ void Bridge::stop() {
 
 Bridge::~Bridge() {
     stop();
-    frkm::delete_object({memory.get_resource()}, control);
+    frkm::delete_object(get_allocator<Control>(), control);
 }
 } // namespace frkm
 

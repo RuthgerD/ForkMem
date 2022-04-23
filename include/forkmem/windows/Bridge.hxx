@@ -11,7 +11,7 @@ class Bridge {
     Control* control;
 
   public:
-    polymorphic_allocator<std::byte> get_allocator() { return memory.get_allocator(); }
+    template <class T> polymorphic_allocator<T> get_allocator() { return {memory.get_resource()}; }
 
     struct Executable {
         std::string path;

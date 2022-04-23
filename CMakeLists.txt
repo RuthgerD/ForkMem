@@ -16,6 +16,8 @@ target_include_directories(forkmem PUBLIC include/)
 target_sources(forkmem PUBLIC
     src/forkmem/unix/bridge.cxx
     src/forkmem/unix/IpcMemory.cxx
+    src/forkmem/windows/Bridge.cxx
+    src/forkmem/windows/IpcMemory.cxx
     src/forkmem/Atomic.cxx
 )
 
@@ -72,8 +74,8 @@ embed_text("share/cmake/sketch_main.cxx" "embed/snippets" "SketchMain")
 
 
 add_executable(forkmem-test)
-target_link_libraries(forkmem-test PUBLIC forkmem-child)
 target_sources(forkmem-test PUBLIC src/main.cxx)
+target_link_libraries(forkmem-test PUBLIC forkmem)
 
 if(UNIX)
 add_library(forkmem-test-child SHARED)
