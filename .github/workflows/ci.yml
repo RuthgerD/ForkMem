@@ -16,3 +16,19 @@ jobs:
           cmake -G Ninja -B build/
           cmake --build build
           build/forkmem-test
+
+  build-macos:
+    name: macos
+    runs-on: macos-latest
+    env:
+      CC: clang
+      CXX: clang++
+    steps:
+      - uses: actions/checkout@v2
+      - name: build & run
+        run: |
+          brew install ninja
+          mkdir build
+          cmake -G Ninja -B build/
+          cmake --build build
+          build/forkmem-test
