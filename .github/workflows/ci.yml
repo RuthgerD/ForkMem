@@ -45,4 +45,4 @@ jobs:
           mkdir build
           cmake -G Ninja -B build/
           cmake --build build
-          # build/forkmem-test.exe
+          build/forkmem-test.exe

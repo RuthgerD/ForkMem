@@ -25,10 +25,10 @@
 
 int main() {
 
-    std::cout << "runtime!\n";
+    std::cout << "runtime!" << std::endl;
 
     auto bridge = frkm::UserBridge<TestData>{};
-    std::cout << "bridge created!\n";
+    std::cout << "bridge created!" << std::endl;
 
 #if defined(__unix__)
     const auto execut =
@@ -42,18 +42,20 @@ int main() {
 #endif
 
     bridge.start(execut);
-    std::cout << "bridge started!\n";
+    std::cout << "bridge started!" << std::endl;
 
     auto& dat = bridge.user_data();
     while (true) {
         std::scoped_lock lk{dat.lk};
-        if (dat.num % 2)
+        if (dat.num % 2) {
+            std::cout << "parent incremented" << std::endl;
             dat.num += 1;
+        }
         if (dat.num == 1000)
             break;
     }
 
     bridge.stop();
 
-    std::cout << "should be: " << dat.num << "\n";
+    std::cout << "should be: " << dat.num << std::endl;
 }

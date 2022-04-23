@@ -16,17 +16,19 @@ TestData* get_user_data() {
 }
 
 extern "C" void entry() {
-    std::cout << "Hello world!\n";
+    std::cout << "Hello world!" << std::endl;
 
-    auto& dat = *get_user_data();
+    auto* dat = get_user_data();
+
+    std::cout << "user data: " << dat << std::endl;
     while (true) {
-        std::scoped_lock lk{dat.lk};
-        if (!(dat.num % 2)) {
-            dat.num += 1;
-            std::cout << "child incremented, sleeping at: " << dat.num << "\n";
+        std::scoped_lock lk{dat->lk};
+        if (!(dat->num % 2)) {
+            dat->num += 1;
+            std::cout << "child incremented, sleeping at: " << dat->num << "\n";
         }
 
-        if (dat.num == 999)
+        if (dat->num == 999)
             break;
         // std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }

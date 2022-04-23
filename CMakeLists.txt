@@ -85,3 +85,7 @@ endif()
 target_sources(forkmem-test-child PUBLIC src/test.cxx)
 
 target_link_libraries(forkmem-test-child PUBLIC forkmem-child)
+
+
+
+add_custom_command(TARGET forkmem-test POST_BUILD COMMAND ${CMAKE_COMMAND} -E echo "$<TARGET_FILE:forkmem-test>")
