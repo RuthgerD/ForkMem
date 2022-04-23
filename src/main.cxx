@@ -27,7 +27,7 @@ int main() {
 
     auto bridge = frkm::UserBridge<TestData>{};
 
-#if defined(__unix__)
+#if defined(__unix__) || defined(__APPLE__)
     const auto execut =
         frkm::Bridge::Executable{.library = "./build/libforkmem-test-child.so", .entry = "entry"};
 #elif defined(_WIN32)
