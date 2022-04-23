@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <utility>
 #ifdef __has_include
 #if __has_include(<memory_resource>)
 #include <memory_resource>
@@ -38,3 +39,22 @@ using memory_resource = std::experimental::pmr::memory_resource;
 #error "Missing <memory_resource>"
 #endif
 #endif
+
+namespace frkm {
+template <class T, class... Args> T* new_object(polymorphic_allocator<T> alloc, Args... args) {
+    auto* p = alloc.allocate(1);
+    try {
+        alloc.construct(p, std::forward<Args>(args)...);
+    } catch (...) {
+        alloc.deallocate(p, 1);
+        throw;
+    }
+    return p;
+}
+
+template <class T> void delete_object(polymorphic_allocator<T> alloc, T* p) {
+    p->~T();
+    alloc.deallocate(p, 1);
+}
+
+} // namespace frkm

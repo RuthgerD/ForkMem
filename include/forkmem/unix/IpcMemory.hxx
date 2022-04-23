@@ -13,7 +13,7 @@ struct IpcMemory {
   public:
     IpcMemory(std::size_t size);
 
-    polymorphic_allocator<std::byte> get_allocator();
+    memory_resource* get_resource();
 
     ~IpcMemory();
 };

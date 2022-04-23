@@ -43,7 +43,7 @@ struct Bridge::Control {
 };
 
 void Bridge::start(const Executable& exec, void* user_data) {
-    control = memory.get_allocator().new_object<Control>();
+    control = frkm::new_object(get_allocator<Control>());
 
     std::scoped_lock start_lk{control->start};
 
@@ -88,7 +88,7 @@ void Bridge::stop() { kill(control->child_pid, SIGKILL); }
 
 Bridge::~Bridge() {
     stop();
-    get_allocator().delete_object(control);
+    frkm::delete_object(get_allocator<Control>(), control);
 }
 
 } // namespace frkm

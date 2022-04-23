@@ -2,6 +2,7 @@
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <sys/mman.h>
+#include "forkmem/allocator.hxx"
 #include "forkmem/unix/IpcMemory.hxx"
 
 namespace frkm {
@@ -14,7 +15,7 @@ IpcMemory::IpcMemory(std::size_t size) {
         ipc_pool_resource{usable_buf + sizeof(ipc_pool_resource), mmap_size - sizeof(ipc_pool_resource)};
 }
 
-polymorphic_allocator<std::byte> IpcMemory::get_allocator() { return resource; }
+memory_resource* IpcMemory::get_resource() { return resource; }
 
 IpcMemory::~IpcMemory() {
     resource->~ipc_pool_resource();
