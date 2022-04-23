@@ -20,6 +20,9 @@ target_sources(forkmem PUBLIC
 )
 
 target_link_libraries(forkmem PRIVATE Boost::atomic Boost::process)
+if(UNIX AND NOT APPLE)
+    target_link_libraries(forkmem PRIVATE rt dl)
+endif()
 
 add_library(forkmem-child INTERFACE)
 target_sources(forkmem-child INTERFACE
