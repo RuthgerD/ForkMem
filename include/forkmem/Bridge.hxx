@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #if defined(__unix__) || defined(__APPLE__)
 #include "forkmem/unix/bridge.hxx"
 #elif defined(_WIN32)
@@ -15,10 +16,11 @@ template <class T> class UserBridge : public Bridge {
     using Bridge::Executable;
 
     UserBridge() {
-
+        std::cout << "User bridge CTOR" << std::endl;
         auto talloc = get_allocator<T>();
         auto balloc = get_allocator<std::byte>();
         data = frkm::new_object(talloc, balloc);
+        std::cout << "User bridge CTOR made data: " << data << std::endl;
     }
 
     T& user_data() { return *data; }

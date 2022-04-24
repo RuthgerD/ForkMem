@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <mutex>
 #include <boost/container/pmr/memory_resource.hpp>
 #include <boost/container/pmr/monotonic_buffer_resource.hpp>
@@ -16,7 +17,9 @@ class ipc_pool_resource : public memory_resource {
 
   public:
     explicit ipc_pool_resource(void* buffer, std::size_t size)
-        : monotonic{buffer, size}, pool_resource{&monotonic} {}
+        : monotonic{buffer, size}, pool_resource{&monotonic} {
+        std::cout << "ipc_pool_resource created with " << buffer << " with size " << size << "\n";
+    }
     // explicit ipc_pool_resource(memory_resource* upstream) : monotonic{upstream}, pool_resource{&monotonic}
     // {}
     ipc_pool_resource(const ipc_pool_resource&) = delete;
