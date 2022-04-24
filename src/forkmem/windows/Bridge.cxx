@@ -1,6 +1,7 @@
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 
+#include <cstdio>
 #include <boost/process.hpp>
 #include "forkmem/windows/Bridge.hxx"
 
@@ -30,7 +31,8 @@ void Bridge::start(const Executable& exec, void* user_data) {
         bp::env["MAPVIEW_HANDLE"] = std::to_string(reinterpret_cast<std::size_t>(memory.map_handle)),
         bp::env["MAPVIEW_SIZE"] = std::to_string(memory.mapping_size),
         bp::env["MAPVIEW_PTR_BASE"] = std::to_string(reinterpret_cast<std::size_t>(memory.mmap_buffer)),
-        bp::env["USERDATA_PTR"] = std::to_string(reinterpret_cast<std::size_t>(user_data)), exec.path);
+        bp::env["USERDATA_PTR"] = std::to_string(reinterpret_cast<std::size_t>(user_data)), exec.path,
+        (bp::std_out & bp::std_err) > stdout);
 
     std::cout << "windows bridge process started" << std::endl;
 }
