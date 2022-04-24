@@ -20,7 +20,7 @@ IpcMemory::IpcMemory(std::size_t size) {
     sec.nLength = sizeof(SECURITY_ATTRIBUTES);
     sec.bInheritHandle = 1;
 
-    map_handle = CreateFileMappingA(NULL, &sec, PAGE_READWRITE, mapping_size, mapping_size, NULL);
+    map_handle = CreateFileMappingA(NULL, &sec, PAGE_READWRITE, 0, mapping_size, NULL);
     if (map_handle == nullptr) {
         std::cout << "failed create file mapping: " << GetLastError() << std::endl;
         throw std::runtime_error{"Failed to create file mapping"};
