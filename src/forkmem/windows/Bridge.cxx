@@ -38,6 +38,15 @@ void Bridge::start(const Executable& exec, void* user_data) {
 void Bridge::suspend() { ::NtSuspendProcess(control->proc.native_handle()); }
 void Bridge::resume() { ::NtResumeProcess(control->proc.native_handle()); }
 
+bool Bridge::tick() {
+    if (!control->proc.running()) {
+        const auto exit_code = control->proc.exit_code();
+        std::cout << "child process crashed :o " << exit_code << std::endl;
+        return false;
+    }
+    return true;
+}
+
 void Bridge::stop() {
     std::cout << "windows bridge stopping" << std::endl;
 

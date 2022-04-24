@@ -47,8 +47,7 @@ int main() {
     auto& dat = bridge.user_data();
     std::cout << "got user data" << &dat << std::endl;
 
-    while (true) {
-        std::cout << "parent: triyng to lock " << std::endl;
+    while (bridge.tick()) {
         std::scoped_lock lk{dat.lk};
         if (dat.num % 2) {
             std::cout << "parent incremented" << std::endl;

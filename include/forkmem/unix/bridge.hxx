@@ -36,6 +36,8 @@ class Bridge {
     };
     void start(const Executable& exec, void* user_data);
 
+    bool tick() { return true; }
+
     void suspend();
     void resume();
     void stop();
