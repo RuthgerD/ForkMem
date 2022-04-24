@@ -34,6 +34,4 @@ void* get_data() {
     return reinterpret_cast<void*>(userdata_ptr);
 }
 
-int main() {}
-
 #endif
