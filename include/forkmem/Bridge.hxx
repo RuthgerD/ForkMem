@@ -25,7 +25,10 @@ template <class T> class UserBridge : public Bridge {
 
     T& user_data() { return *data; }
 
-    void start(const Executable& exec) { return Bridge::start(exec, static_cast<void*>(data)); }
+    void start(const Executable& exec) {
+        std::cout << "user bridge starting with userdata " << data << std::endl;
+        return Bridge::start(exec, static_cast<void*>(data));
+    }
 
     ~UserBridge() {
         auto talloc = get_allocator<T>();

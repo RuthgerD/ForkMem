@@ -25,7 +25,7 @@ extern "C" void entry() {
         std::scoped_lock lk{dat->lk};
         if (!(dat->num % 2)) {
             dat->num += 1;
-            std::cout << "child incremented, sleeping at: " << dat->num << "\n";
+            // std::cout << "child incremented, sleeping at: " << dat->num << "\n";
         }
 
         if (dat->num == 999)
