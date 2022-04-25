@@ -18,7 +18,7 @@ class Win32Memory {
 
     unsigned char* data();
 
-    const Handle& native_handle() { return handle; }
+    const Handle& native_handle() const { return handle; }
 
     ~Win32Memory();
 

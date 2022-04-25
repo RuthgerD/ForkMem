@@ -1,5 +1,6 @@
 #include <atomic>
 #include <cstdint>
+#include <cstring>
 #include <thread>
 #include "forkmem/sync/Atomic.hxx"
 #include "forkmem/sync/RecursiveMutex.hxx"
@@ -12,14 +13,20 @@ namespace forkmem {
 
 std::uint64_t process_id() { return ::getpid(); }
 
-std::uint64_t thread_id() { return ::pthread_self(); }
+std::uint64_t thread_id() {
+    std::uint64_t ret = 0;
+    auto id = ::pthread_self();
+    static_assert(sizeof(id) <= sizeof(ret));
+    std::memcpy(&ret, &id, sizeof(id));
+    return ret;
+}
 
 } // namespace forkmem
 
 #elif defined(_WIN32)
+#include <windows.h>
 
 #include <processthreadsapi.h>
-#include <windows.h>
 namespace forkmem {
 std::uint64_t process_id() { return 0; }
 

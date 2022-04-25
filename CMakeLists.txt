@@ -29,5 +29,9 @@ target_sources(forkmem PRIVATE
 
 target_link_libraries(forkmem PUBLIC Boost::atomic Boost::container Boost::process)
 
+if(UNIX AND NOT APPLE)
+    target_link_libraries(forkmem PUBLIC rt dl)
+endif()
+
 enable_testing()
 add_subdirectory(tests)

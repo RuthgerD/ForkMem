@@ -16,7 +16,7 @@ jobs:
           cmake -G Ninja -B build/
           cmake --build build
           cd build
-          ctest
+          ctest --output-on-failure
 
   build-macos:
     name: macos
@@ -33,7 +33,7 @@ jobs:
           cmake -G Ninja -B build/
           cmake --build build
           cd build
-          ctest
+          ctest --output-on-failure
   
   build-windows:
     name: windows
@@ -48,4 +48,5 @@ jobs:
           cmake -G Ninja -B build/
           cmake --build build
           cd build
-          ctest
+          ctest --output-on-failure
+          tests/forkmem_tests.exe

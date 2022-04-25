@@ -1,4 +1,5 @@
 
+#if defined(__unix__) || defined(__APPLE__)
 #include <cerrno>
 #include <cstdio>
 #include <stdexcept>
@@ -19,3 +20,4 @@ unsigned char* UnixMemory::data() { return reinterpret_cast<unsigned char*>(memo
 
 UnixMemory::~UnixMemory() { ::munmap(memory, size); }
 } // namespace forkmem
+#endif

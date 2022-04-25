@@ -2,7 +2,9 @@
 #include <cstring>
 #include <iostream>
 #include <istream>
+#include <ostream>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <boost/process.hpp>
 #include <boost/process/detail/child_decl.hpp>
@@ -18,9 +20,11 @@
 #define TEST_BINARY_DIR "."
 #endif
 
+namespace bp = boost::process;
+
 #if defined(__unix__) || defined(__APPLE__)
 #include <dlfcn.h>
-boost::process::child create_child(const std::string& name, void* userdata) {
+bp::child create_child(const std::string& name, void* userdata, auto) {
     auto child_pid = 0;
 
     std::thread([&, name, userdata] {
@@ -49,13 +53,13 @@ boost::process::child create_child(const std::string& name, void* userdata) {
     return boost::process::child{child_pid};
 }
 #elif defined(_WIN32)
-void create_child(const std::string& name, void* userdata, const Win32Memory::Handle handle& handle) {
-    control->proc =
-        bp::child(bp::env["MAPVIEW_HANDLE"] = std::to_string(reinterpret_cast<std::size_t>(handle.handle)),
-                  bp::env["MAPVIEW_SIZE"] = std::to_string(handle.size),
-                  bp::env["MAPVIEW_PTR_BASE"] = std::to_string(reinterpret_cast<std::size_t>(handle.memory)),
-                  bp::env["USERDATA_PTR"] = std::to_string(reinterpret_cast<std::size_t>(userdata)), name,
-                  (bp::std_out & bp::std_err) > stdout);
+bp::child create_child(const std::string& name, void* userdata, const auto& handle) {
+    return bp::child(bp::env["MAPVIEW_HANDLE"] = std::to_string(reinterpret_cast<std::size_t>(handle.handle)),
+                     bp::env["MAPVIEW_SIZE"] = std::to_string(handle.size),
+                     bp::env["MAPVIEW_PTR_BASE"] =
+                         std::to_string(reinterpret_cast<std::size_t>(handle.memory)),
+                     bp::env["USERDATA_PTR"] = std::to_string(reinterpret_cast<std::size_t>(userdata)), name,
+                     (bp::std_out & bp::std_err) > stdout);
 }
 #endif
 
@@ -78,11 +82,13 @@ TEST_CASE("Basic Allocation", "[Memory]") {
 
     REQUIRE(!obj->flag.load());
 
-    auto child = create_child(TEST_BINARY_DIR "/forkmem_tests_child", obj);
+    auto child =
+        create_child(TEST_BINARY_DIR "/forkmem_tests_child", obj, memory.get_native().native_handle());
     REQUIRE(child.running());
 
     while (!obj->flag.load()) {
         if (!child.running()) {
+            REQUIRE(child.exit_code() == 0);
             REQUIRE(false);
             break;
         }
@@ -92,13 +98,16 @@ TEST_CASE("Basic Allocation", "[Memory]") {
     if (child.running()) {
         child.terminate();
         child.exit_code();
+    } else {
+        REQUIRE(child.exit_code() == 0);
     }
 
-    auto read = std::istream{&obj->channel};
-    auto out = std::string{};
-    std::getline(read, out);
+    std::string out;
+    for (auto c : obj->channel) {
+        out.push_back(c);
+    }
 
-    REQUIRE(out == sample_text);
+    REQUIRE(std::string_view{out} == std::string_view{obj->str});
 
     forkmem::delete_object(allocator, obj);
 }

@@ -9,11 +9,21 @@
 #include "Type.hxx"
 
 void program() {
-    const auto userdata_ptr = reinterpret_cast<AllocatingType*>(std::stoll(std::getenv("USERDATA_PTR")));
+    std::cout << "program entered" << std::endl;
+    auto* userdata_ptr = reinterpret_cast<AllocatingType*>(std::stoll(std::getenv("USERDATA_PTR")));
 
-    std::ostream{&userdata_ptr->channel} << userdata_ptr->str << std::endl;
+    printf("user data ptr: %p\n", userdata_ptr);
+    std::fflush(stdout);
+
+    auto& to_print = userdata_ptr->str;
+    std::cout << to_print << std::endl;
+
+    for (auto c : to_print) {
+        userdata_ptr->channel.push_back(c);
+    }
 
     userdata_ptr->flag.store(true);
+
     return;
 }
 
@@ -32,10 +42,13 @@ void setup_data() {
     const auto size = std::stoll(std::getenv("MAPVIEW_SIZE"));
     const auto ptr_base = reinterpret_cast<void*>(std::stoll(std::getenv("MAPVIEW_PTR_BASE")));
 
-    auto* ptr_mapped = MapViewOfFileEx(handle, FILE_MAP_ALL_ACCESS, 0, 0, size, ptr_base);
+    printf("hande: %p size: %d ptr_base: %p\n", handle, size, ptr_base);
 
-    if (ptr_mapped == nullptr)
+    auto* ptr_mapped = MapViewOfFileEx(handle, FILE_MAP_ALL_ACCESS, 0, 0, size, ptr_base);
+    printf("ptr mapped: %p\n", ptr_mapped);
+    if (ptr_mapped == nullptr) {
         throw 0;
+    }
 }
 
 int main() {

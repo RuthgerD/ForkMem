@@ -11,9 +11,13 @@ class UnixMemory {
     std::size_t size;
 
   public:
+    using Handle = void*;
+
     UnixMemory(std::size_t size);
 
     unsigned char* data();
+
+    const Handle& native_handle() const { return memory; }
 
     ~UnixMemory();
 };
