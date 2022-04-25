@@ -24,7 +24,8 @@ class basic_syncstringbuf : public std::basic_stringbuf<CharT, std::char_traits<
 
   public:
     basic_syncstringbuf(Allocator allocator)
-        : std::basic_stringbuf<CharT, std::char_traits<CharT>, Allocator>{allocator} {}
+        : std::basic_stringbuf<CharT, std::char_traits<CharT>, Allocator>{
+              std::basic_string<CharT, std::char_traits<CharT>, Allocator>{allocator}} {}
 
   protected:
     std::streamsize xsgetn(CharT* s, std::streamsize n) override {
