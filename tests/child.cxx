@@ -6,6 +6,7 @@
 #include <ostream>
 #include <string>
 #include <thread>
+#include <forkmem/Memory.hxx>
 #include "Type.hxx"
 
 void program() {
@@ -27,32 +28,29 @@ void program() {
     return;
 }
 
-#if defined(__unix__) || defined(__APPLE__)
-extern "C" int main() { program(); }
-#elif defined(_WIN32)
-
-#include <windows.h>
-
-#include <memoryapi.h>
-
-#include <winbase.h>
-
 void setup_data() {
-    const auto handle = reinterpret_cast<void*>(std::stoll(std::getenv("MAPVIEW_HANDLE")));
-    const auto size = std::stoll(std::getenv("MAPVIEW_SIZE"));
-    const auto ptr_base = reinterpret_cast<void*>(std::stoll(std::getenv("MAPVIEW_PTR_BASE")));
+#if defined(__unix__) || defined(__APPLE__)
+    const auto handle = forkmem::NativeMemory::Handle{
+        .handle = std::stoull(std::getenv("MAPVIEW_HANDLE")),
+        .memory = reinterpret_cast<void*>(std::stoll(std::getenv("MAPVIEW_PTR_BASE"))),
+        .size = std::stoull(std::getenv("MAPVIEW_SIZE")),
+    };
+    printf("hande: %ld size: %lu ptr_base: %p\n", handle.handle, handle.size, handle.memory);
+#elif defined(_WIN32)
+    const auto handle = forkmem::NativeMemory::Handle{
+        .handle = reinterpret_cast<void*>(std::stoll(std::getenv("MAPVIEW_HANDLE"))),
+        .memory = reinterpret_cast<void*>(std::stoll(std::getenv("MAPVIEW_PTR_BASE"))),
+        .size = std::stoul(std::getenv("MAPVIEW_SIZE")),
+    };
+    printf("hande: %p size: %d ptr_base: %p\n", handle.handle, handle.size, handle.memory);
+#endif
 
-    printf("hande: %p size: %d ptr_base: %p\n", handle, size, ptr_base);
-
-    auto* ptr_mapped = MapViewOfFileEx(handle, FILE_MAP_ALL_ACCESS, 0, 0, size, ptr_base);
-    printf("ptr mapped: %p\n", ptr_mapped);
-    if (ptr_mapped == nullptr) {
-        throw 0;
-    }
+    forkmem::NativeMemory::make_reachable(handle);
+    printf("ptr mapped: %p\n", handle.memory);
+    std::fflush(stdout);
 }
 
 int main() {
     setup_data();
     program();
 }
-#endif

@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -22,52 +23,21 @@
 
 namespace bp = boost::process;
 
-#if defined(__unix__) || defined(__APPLE__)
-#include <dlfcn.h>
-bp::child create_child(const std::string& name, void* userdata, auto) {
-    auto child_pid = 0;
-
-    std::thread([&, name, userdata] {
-        const auto pid = ::fork();
-
-        if (pid != 0) {
-            child_pid = pid;
-            return;
-        }
-
-        auto handle = ::dlopen(name.c_str(), RTLD_LAZY);
-        if (handle == nullptr) {
-            return;
-        }
-        auto userdata_ptr = std::to_string(reinterpret_cast<std::size_t>(userdata));
-        ::setenv("USERDATA_PTR", userdata_ptr.c_str(), true);
-        auto entry_func = reinterpret_cast<void (*)()>(::dlsym(handle, "main"));
-        if (entry_func == nullptr) {
-            return;
-        }
-        (*entry_func)();
-    }).join();
-
-    REQUIRE(child_pid != 0);
-
-    return boost::process::child{child_pid};
-}
-#elif defined(_WIN32)
 bp::child create_child(const std::string& name, void* userdata, const auto& handle) {
-    return bp::child(bp::env["MAPVIEW_HANDLE"] = std::to_string(reinterpret_cast<std::size_t>(handle.handle)),
-                     bp::env["MAPVIEW_SIZE"] = std::to_string(handle.size),
-                     bp::env["MAPVIEW_PTR_BASE"] =
-                         std::to_string(reinterpret_cast<std::size_t>(handle.memory)),
-                     bp::env["USERDATA_PTR"] = std::to_string(reinterpret_cast<std::size_t>(userdata)), name,
-                     (bp::std_out & bp::std_err) > stdout);
+    return bp::child(
+        bp::env["MAPVIEW_HANDLE"] = std::to_string(reinterpret_cast<std::uint64_t>(handle.handle)),
+        bp::env["MAPVIEW_SIZE"] = std::to_string(handle.size),
+        bp::env["MAPVIEW_PTR_BASE"] = std::to_string(reinterpret_cast<std::size_t>(handle.memory)),
+        bp::env["USERDATA_PTR"] = std::to_string(reinterpret_cast<std::size_t>(userdata)), name,
+        (bp::std_out & bp::std_err) > stdout);
 }
-#endif
 
 const std::string sample_text =
     "hello world this is quite a long string, because compiler vendors are smart by inlining "
     "the first view bytes of the string into the object itself :)";
 
 TEST_CASE("Basic Allocation", "[Memory]") {
+    std::cout << "hello what the fuck\n";
     auto memory = forkmem::Memory{1024 * 100};
 
     auto allocator = forkmem::polymorphic_allocator<AllocatingType>(memory.get_resource());

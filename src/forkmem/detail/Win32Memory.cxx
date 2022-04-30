@@ -31,8 +31,8 @@ Win32Memory::Win32Memory(std::size_t size) : handle{.size = size} {
     }
 }
 
-Win32Memory::Win32Memory(void* handle, void* memory, std::size_t size) : handle{handle, memory, size} {
-    const auto res = MapViewOfFileEx(handle, FILE_MAP_ALL_ACCESS, 0, 0, size, memory);
+void Win32Memory::make_reachable(const Handle& handle) {
+    const auto res = MapViewOfFileEx(handle.handle, FILE_MAP_ALL_ACCESS, 0, 0, handle.size, handle.memory);
     if (res == nullptr) {
         throw_system_error();
     }

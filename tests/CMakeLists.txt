@@ -30,12 +30,7 @@ target_link_libraries (forkmem_tests PUBLIC forkmem Catch2::Catch2WithMain)
 catch_discover_tests (forkmem_tests)
 
 
-set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
-if (UNIX)
-  add_library(forkmem_tests_child SHARED)
-elseif(WIN32)
-  add_executable(forkmem_tests_child)
-endif()
+add_executable(forkmem_tests_child)
 target_sources(forkmem_tests_child PUBLIC child.cxx)
 target_include_directories(forkmem_tests_child PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 

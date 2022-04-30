@@ -49,4 +49,3 @@ jobs:
           cmake --build build
           cd build
           ctest --output-on-failure
-          tests/forkmem_tests.exe

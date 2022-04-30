@@ -14,7 +14,8 @@ class Win32Memory {
     };
 
     Win32Memory(std::size_t size);
-    Win32Memory(void* handle, void* memory, std::size_t size);
+
+    static void make_reachable(const Handle& handle);
 
     unsigned char* data();
 
