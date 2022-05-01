@@ -30,14 +30,14 @@ void program() {
 
 void setup_data() {
 #if defined(__unix__) || defined(__APPLE__)
-    const auto handle = forkmem::NativeMemory::Handle{
+    const auto handle = forkmem::Memory::Handle{
         .handle = std::stoull(std::getenv("MAPVIEW_HANDLE")),
         .memory = reinterpret_cast<void*>(std::stoll(std::getenv("MAPVIEW_PTR_BASE"))),
         .size = std::stoull(std::getenv("MAPVIEW_SIZE")),
     };
     printf("hande: %ld size: %lu ptr_base: %p\n", handle.handle, handle.size, handle.memory);
 #elif defined(_WIN32)
-    const auto handle = forkmem::NativeMemory::Handle{
+    const auto handle = forkmem::Memory::Handle{
         .handle = reinterpret_cast<void*>(std::stoll(std::getenv("MAPVIEW_HANDLE"))),
         .memory = reinterpret_cast<void*>(std::stoll(std::getenv("MAPVIEW_PTR_BASE"))),
         .size = std::stoul(std::getenv("MAPVIEW_SIZE")),
@@ -45,7 +45,7 @@ void setup_data() {
     printf("hande: %p size: %d ptr_base: %p\n", handle.handle, handle.size, handle.memory);
 #endif
 
-    forkmem::NativeMemory::make_reachable(handle);
+    forkmem::Memory::make_reachable(handle);
     printf("ptr mapped: %p\n", handle.memory);
     std::fflush(stdout);
 }

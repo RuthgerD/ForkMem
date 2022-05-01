@@ -71,7 +71,7 @@ class basic_syncstringbuf : public std::basic_stringbuf<CharT, std::char_traits<
 };
 
 namespace pmr {
-using syncstringbuf = basic_syncstringbuf<char, polymorphic_allocator<char>>;
+using syncstringbuf = basic_syncstringbuf<char, PoolAllocator<char>>;
 }
 
 } // namespace forkmem

@@ -7,8 +7,8 @@
 #include "forkmem/sync/Atomic.hxx"
 
 namespace forkmem::pmr {
-using string = std::basic_string<char, std::char_traits<char>, forkmem::polymorphic_allocator<char>>;
-template <class T> using deque = std::deque<T, forkmem::polymorphic_allocator<T>>;
+using string = std::basic_string<char, std::char_traits<char>, forkmem::PoolAllocator<char>>;
+template <class T> using deque = std::deque<T, forkmem::PoolAllocator<T>>;
 } // namespace forkmem::pmr
 
 struct AllocatingType {
@@ -18,7 +18,7 @@ struct AllocatingType {
 
     forkmem::Atomic<bool> flag;
 
-    AllocatingType(forkmem::polymorphic_allocator<char> alloc) : str{alloc}, channel{alloc} {}
+    AllocatingType(forkmem::PoolAllocator<char> alloc) : str{alloc}, channel{alloc} {}
 };
 
 #endif

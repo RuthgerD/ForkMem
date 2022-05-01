@@ -38,11 +38,15 @@ const std::string sample_text =
 
 TEST_CASE("Basic Allocation", "[Memory]") {
     std::cout << "hello what the fuck\n";
-    auto memory = forkmem::Memory{1024 * 100};
+    const auto size = 1024 * 100;
+    auto memory = forkmem::Memory{size};
+    auto pool = new (memory.data()) forkmem::MemoryPool{size - sizeof(forkmem::MemoryPool)};
 
-    auto allocator = forkmem::polymorphic_allocator<AllocatingType>(memory.get_resource());
+    std::cout << "created pool?\n";
 
-    auto* obj = forkmem::new_object(allocator, memory.get_resource());
+    auto allocator = forkmem::PoolAllocator<AllocatingType>{pool};
+
+    auto* obj = allocator.new_object(allocator);
 
     REQUIRE(obj != nullptr);
 
@@ -52,8 +56,7 @@ TEST_CASE("Basic Allocation", "[Memory]") {
 
     REQUIRE(!obj->flag.load());
 
-    auto child =
-        create_child(TEST_BINARY_DIR "/forkmem_tests_child", obj, memory.get_native().native_handle());
+    auto child = create_child(TEST_BINARY_DIR "/forkmem_tests_child", obj, memory.native_handle());
     REQUIRE(child.running());
 
     while (!obj->flag.load()) {
@@ -79,5 +82,5 @@ TEST_CASE("Basic Allocation", "[Memory]") {
 
     REQUIRE(std::string_view{out} == std::string_view{obj->str});
 
-    forkmem::delete_object(allocator, obj);
+    allocator.delete_object(obj);
 }

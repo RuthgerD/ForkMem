@@ -10,7 +10,7 @@ list (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake/Modules")
 if (EXISTS "${CMAKE_SOURCE_DIR}/.boost/")
     set(BOOST_SOURCE_ROOT "./.boost/")
 endif()
-set(BOOST_INCLUDE_LIBRARIES atomic container process)
+set(BOOST_INCLUDE_LIBRARIES atomic container process interprocess)
 include(SetupBoost)
 
 add_library(forkmem STATIC)
@@ -20,8 +20,7 @@ target_sources(forkmem PRIVATE
     src/forkmem/sync/Mutex.cxx
     src/forkmem/sync/RecursiveMutex.cxx
     
-    src/forkmem/PoolResource.cxx
-    src/forkmem/Memory.cxx
+    src/forkmem/Allocator.cxx
     src/forkmem/detail/UnixMemory.cxx
     src/forkmem/detail/Win32Memory.cxx
 
